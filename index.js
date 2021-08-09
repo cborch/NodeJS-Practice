@@ -24,4 +24,17 @@ app.use(express.static('public'))
 // What is our server going to do?
 // 1. Serve web pages
 // - In our case, index.html
-// 2. 
+// - Host static files
+// 2. Save data to db
+// 3. Authentication
+
+// index.js is the server
+// - Right now all it does is host static files
+//  - Right now that static file is index.html
+// Clients connect and request that html page
+// - html is then sent to the client where it is rendered
+// - If the html contains js, it is sent as text and then executed at the client 
+
+function testFunc() {
+    console.log('Func called')
+}
