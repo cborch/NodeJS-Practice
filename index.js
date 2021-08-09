@@ -20,6 +20,9 @@ app.listen(3000, () => console.log('listening at 3000'))
 // Now we're going to use express to host our static files
 app.use(express.static('public'))
 
+// Setup web server to exect to recieve JSON
+app.use(express.json({ limit: '1mb' }))
+
 
 // What is our server going to do?
 // 1. Serve web pages
@@ -35,6 +38,16 @@ app.use(express.static('public'))
 // - html is then sent to the client where it is rendered
 // - If the html contains js, it is sent as text and then executed at the client 
 
-function testFunc() {
-    console.log('Func called')
-}
+// Setting up Routing
+
+// Specifying a POST route
+// request contains the info that the client is sneding up
+// response allows us to send stuff back to the user
+app.post('/api', (request, response) => {
+    console.log(request.body)
+    response.json({
+        status: "success",
+        latitide: request.body.lat,
+        longitude: request.body.long
+    })
+})

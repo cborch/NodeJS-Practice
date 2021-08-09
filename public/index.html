@@ -8,35 +8,33 @@
 </head>
 <body>
     <script>
-        function testFunc() {
-           if ('geolocation' in navigator) {
-            console.log('gl is avaialble')
-            navigator.geolocation.getCurrentPosition(position =>
-            { 
-                const lat = position.coords.latitude
-                const long = position.coords.longitude
-                document.getElementById('latitude').textContent = lat
-                document.getElementById('longitude').textContent = long
-                console.log(position)
-            })
-        } else {
-            console.log('gl is not avaialble')
-        } 
-        }
 
         if ('geolocation' in navigator) {
             console.log('gl is avaialble')
-            navigator.geolocation.getCurrentPosition(position =>
+            navigator.geolocation.getCurrentPosition(async position =>
             { 
                 const lat = position.coords.latitude
                 const long = position.coords.longitude
                 document.getElementById('latitude').textContent = lat
                 document.getElementById('longitude').textContent = long
-                console.log(position)
+                //console.log(position)
+                const data = { lat, long }
+                console.log(JSON.stringify(data))
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type":"application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+                const resposne = await fetch('/api', options)
+                const json = await resposne.json()
+                console.log(json)
             })
         } else {
             console.log('gl is not avaialble')
         }
+
     </script>
     <header>
         <h1>Data Selfie App</h1>
@@ -45,7 +43,6 @@
         Latitude: <span id="latitude"></span>&deg;<br />
         Longitude: <span id="longitude"></span>&deg;
     </p>
-    <button onclick="testFunc()">Geolocate</button>
 
 </body>
 </html>
