@@ -9,7 +9,15 @@
 <body>
     <script>
 
-        if ('geolocation' in navigator) {
+        function submit() {
+            userFavColor = document.getElementById('favColor').value
+            document.getElementById('favColor').value = ''
+            console.log(userFavColor)
+            geolocate(userFavColor)
+        }
+
+        function geolocate(color) {
+            if ('geolocation' in navigator) {
             console.log('gl is avaialble')
             navigator.geolocation.getCurrentPosition(async position =>
             { 
@@ -18,7 +26,7 @@
                 document.getElementById('latitude').textContent = lat
                 document.getElementById('longitude').textContent = long
                 //console.log(position)
-                const data = { lat, long }
+                const data = { lat, long, color }
                 console.log(JSON.stringify(data))
                 const options = {
                     method: 'POST',
@@ -34,6 +42,10 @@
         } else {
             console.log('gl is not avaialble')
         }
+        
+        }
+        
+        geolocate("Blue")
 
     </script>
     <header>
@@ -43,6 +55,9 @@
         Latitude: <span id="latitude"></span>&deg;<br />
         Longitude: <span id="longitude"></span>&deg;
     </p>
+    Favorite Color <input type="text" id="favColor"><br /><br />
+    <button onclick="submit()">Submit</button>
+    
 
 </body>
 </html>
