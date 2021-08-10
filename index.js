@@ -40,6 +40,12 @@ app.use(express.json({ limit: '1mb' }))
 // - html is then sent to the client where it is rendered
 // - If the html contains js, it is sent as text and then executed at the client 
 
+
+// Now we need to add a DB for persistence
+// - MongoDB is popular
+//  - MOngoDB is a document based DB which means files are stored in files similar to JSON documents
+// We'll use NE-DB
+// - Its a subset of MongoDB's API
 const database = new Datastore('database.db')
 database.loadDatabase()
 
@@ -54,18 +60,19 @@ app.post('/api', (request, response) => {
     const timestamp = Date.now()
     data.timestamp = timestamp
     database.insert(data)
-    response.json({
-        status: "success",
-        latitide: request.body.lat,
-        longitude: request.body.long,
-        color: request.body.color,
-        timestamp: timestamp
+    response.json(data)
+})
+
+app.get('/api', (request, response) => {
+    database.find({}, (err, data) => {
+        if (err) {
+            response.sendStatus()
+            return
+        } else {
+            response.json(data)
+        }
+        
     })
 })
 
 
-// Now we need to add a DB for persistence
-// - MongoDB is popular
-//  - MOngoDB is a document based DB which means files are stored in files similar to JSON documents
-// We'll use NE-DB
-// - Its a subset of MongoDB's API
