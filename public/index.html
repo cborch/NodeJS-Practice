@@ -4,59 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
     <title>Document</title>
 </head>
 <body>
     <script>
 
-        function submit() {
-            userFavColor = document.getElementById('favColor').value
-            document.getElementById('favColor').value = ''
-            console.log(userFavColor)
-            geolocate(userFavColor)
+        // I haven't actaully made any serious changes to the code here. Rather this is p5.js' function that it calls when the page is ready to go 
+        function setup() {
+            // Configrue p5.js
+            noCanvas();
+            const video = createCapture(VIDEO);
+            video.size(160, 120);
+            let lat, long;
+            const button = document.getElementById('submit');
+            button.addEventListener('click', async event => {
+                const mood = document.getElementById('favColor').value;
+
+                // Base64 encoding turns binary data into ascii characters
+                // - A conveinent way to pass data around
+                // - basically taking binary of pixels colors and sedning it to server as text
+                // Loads p5 video on a canvas so we can then convert that canvas to base 64 with the next line
+                video.loadPixels();
+                const image64 = video.canvas.toDataURL();
+                const data = { lat, long, mood, image64 };
+                const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+                };
+                const response = await fetch('/api', options);
+                const json = await response.json();
+                console.log(json);
+            });
+
+            if ('geolocation' in navigator) {
+                console.log('geolocation available');
+                navigator.geolocation.getCurrentPosition(position => {
+                lat = position.coords.latitude;
+                long = position.coords.longitude;
+                console.log(lat, long);
+                document.getElementById('latitude').textContent = lat;
+                document.getElementById('longitude').textContent = long;
+                });
+            } else {
+                console.log('geolocation not available');
+            }
         }
 
-        function geolocate(color) {
-            if ('geolocation' in navigator) {
-            console.log('gl is avaialble')
-            navigator.geolocation.getCurrentPosition(async position =>
-            { 
-                const lat = position.coords.latitude
-                const long = position.coords.longitude
-                document.getElementById('latitude').textContent = lat
-                document.getElementById('longitude').textContent = long
-                //console.log(position)
-                const data = { lat, long, color }
-                console.log(JSON.stringify(data))
-                const options = {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type":"application/json"
-                    },
-                    body: JSON.stringify(data)
-                }
-                const resposne = await fetch('/api', options)
-                const json = await resposne.json()
-                console.log(json)
-            })
-        } else {
-            console.log('gl is not avaialble')
-        }
         
-        }
+
+
         
-        geolocate("Blue")
 
     </script>
     <header>
         <h1>Data Selfie App</h1>
     </header>
     <p>
+        <a href="http://localhost:3000/">Data Entry</a> |
+        <a href="http://localhost:3000/all.html">List</a>
+    </p>
+    <p>
         Latitude: <span id="latitude"></span>&deg;<br />
         Longitude: <span id="longitude"></span>&deg;
     </p>
     Favorite Color <input type="text" id="favColor"><br /><br />
-    <button onclick="submit()">Submit</button>
+    <button id="submit">Submit</button>
+    
     
 
 </body>

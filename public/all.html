@@ -8,7 +8,10 @@
 </head>
 <body>
     <h1>Data Selfie App</h1>
-
+    <p>
+        <a href="http://localhost:3000/">Data Entry</a> |
+        <a href="http://localhost:3000/all.html">List</a>
+    </p>
 
 <script>
     getData()
@@ -17,17 +20,19 @@
         const data = await response.json()
         
         data.forEach(element => {
-            const root = document.createElement('div')
+            const root = document.createElement('p')
             const color = document.createElement('div')
             const geo = document.createElement('div')
             const date = document.createElement('div')
+            const image = document.createElement('img')
             
             color.textContent = `color: ${element.color}`
             geo.textContent = `${element.lat}°, ${element.long}°`
             const dateString = new Date(element.timestamp).toLocaleDateString()
             date.textContent = dateString
+            image.src = element.image64
 
-            root.append(color, geo, date)
+            root.append(color, geo, date, image)
             document.body.append(root)
         });
     }
